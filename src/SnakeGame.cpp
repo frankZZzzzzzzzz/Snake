@@ -7,6 +7,7 @@
 #include <chrono>
 #include <conio.h>
 #include <cctype>
+#include <cstdlib>
 
 #include "keyPressChecker.h"
 
