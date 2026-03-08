@@ -1,3 +1,6 @@
+#ifndef GAME_PLAY_LAYER_H
+#define GAME_PLAY_LAYER_H
+
 #include <iostream>
 #include <vector>
 #include <utility>
@@ -10,83 +13,65 @@
 #include <ctime>
 
 #include "Direction.h"
-#include "KeyBoard.h"
+#include "Scores/ScoreRecorder.h"
 
-bool isValidDirectionChange(char newDirection, char currDirection);
-bool isValidDirection(char newDirection);
+#include "../ControlLayers/Layer.h"
 
-bool isValidDirectionChange(char newDirection, char currDirection){
-    return !(newDirection == 'W' && currDirection == 'S' ||
-            newDirection == 'A' && currDirection == 'D' ||
-            newDirection == 'S' && currDirection == 'W' ||
-            newDirection == 'D' && currDirection == 'A');
-}
-bool isValidDirection(char newDirection){
-    if (newDirection != 'W' && newDirection != 'A' && newDirection != 'S' && newDirection != 'D')
-        return (false);
-    return (true);
-}
+class GamePlayLayer : public Layer{
 
-class SnakeGame{
 private:
+    std::vector<std::vector<char>> board;
+    std::vector<std::pair<int,int>> bodyParts;
+    Direction direction;
+    ScoreRecorder recorder;
     int boardWidth;
     int boardHeight;
     bool gameOver;
 
 public:
-    SnakeGame(int width = 20, int height = 20, bool gameOver = false)
-    : gameOver{gameOver}, boardWidth{width}, boardHeight{height}{
+    GamePlayLayer(int width = 20, int height = 20, bool gameOver = false)
+    : Layer(),
+    gameOver{gameOver}, boardWidth{width}, boardHeight{height}{
 
     }
     void run(){
         srand(time(0));
-
-        std::vector<std::vector<char>> board(boardHeight, std::vector<char>(boardWidth, ' '));
-        std::vector<std::pair<int,int>> bodyParts{{boardHeight/2, boardWidth/2}};
+        board = std::vector<std::vector<char>>(boardHeight, std::vector<char>(boardWidth, ' '));
+        bodyParts = std::vector<std::pair<int,int>>{{boardHeight/2, boardWidth/2}};
         bodyParts.reserve(boardWidth*boardHeight);
         
-        Direction direction('W',isValidDirectionChange, isValidDirection);
-        
-        std::function<char(void)> keyBoardInput = []() -> char{
-            if (!_kbhit())
-                return ('\0');
+        direction = Direction('W');
 
-            return (std::toupper(char(_getch())));
-        };
-    
-        std::function<void(char)> keyPressed = [&bodyParts, &direction](char key){
-            if (bodyParts.size() == 1 && direction.isValidDirection(key))
-                direction.changeDirection(key);
-            else if (direction.isValidDirection(key) && direction.isValidDirectionChange(key))
-                direction.changeDirection(key);
-        };
-
-        KeyBoard keyboard(keyBoardInput,keyPressed,nullptr,std::chrono::milliseconds(10));
-        placeFruit(board);
+        placeFruit();
         board[boardHeight/2][boardWidth/2] = 'O';
 
         while (!gameOver) {
-            std::cout << direction.getCurrDirection() << "\n";
+            //std::cout << direction.getCurrDirection() << "\n";
             direction.takeStep();
-            moveSnake(board, bodyParts, std::toupper(direction.getCurrDirection()));
+            moveSnake(std::toupper(direction.getCurrDirection()));
             
             system("cls");
             std::cout << "Fruits Eaten: " << bodyParts.size()-1 << "\n";
-            printBoard(board);
+            printBoard();
             std::cout << std::endl;
             
             std::this_thread::sleep_for(std::chrono::milliseconds(750));
         }
-        keyboard.end();
 
         if (bodyParts.size() == boardWidth*boardHeight)
             std::cout << "YOU WIN!";
         else
             std::cout << "GAME OVER, YOU LOSE!";
         
-        std::cin.get();
+        exitLayer();
     }
-    void printBoard(std::vector<std::vector<char>>& board) {
+    void keyPressed(char key){
+        if (bodyParts.size() == 1 && direction.isValidDirection(key))
+            direction.changeDirection(key);
+        else if (direction.isValidDirection(key) && direction.isValidDirectionChange(key))
+            direction.changeDirection(key);
+    }
+    void printBoard() {
         for (int i = 0; i < board.size()+2; i++) {
             std::cout << "*";
         }
@@ -106,10 +91,10 @@ public:
         std::cout << "\n";
     }
 
-    void placeFruit(std::vector<std::vector<char>>& board) {
+    void placeFruit() {
         while (true){
-            int x = rand() % board.size();
-            int y = rand() % board[0].size();
+            int x = rand() % boardWidth;
+            int y = rand() % boardHeight;
             if (board[x][y] == ' ') {
                 board[x][y] = 'f';
                 break;
@@ -117,8 +102,8 @@ public:
         }
     }
 
-    void moveSnake(std::vector<std::vector<char>>& board,std::vector<std::pair<int,int>>& bodyParts, char direction) {
-        std::pair<int,int> head = *bodyParts.begin();
+    void moveSnake(char direction) {
+        std::pair<int,int> head = bodyParts.front();
         std::pair<int,int> newHead = head;
 
         switch (direction) {
@@ -140,7 +125,7 @@ public:
                 gameOver = true;
             }
             else {
-                placeFruit(board);
+                placeFruit();
             }
         }
         else{
@@ -155,10 +140,6 @@ public:
 
         }
     }
-    char keyBoardInput(){
-        if (!_kbhit())
-            return ('\0');
-
-        return (std::toupper(char(_getch())));
-    }
 };
+
+#endif

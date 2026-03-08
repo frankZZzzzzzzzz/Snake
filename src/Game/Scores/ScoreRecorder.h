@@ -1,19 +1,26 @@
+#ifndef SCORE_RECOREDER_H
+#define SCORE_RECOREDER_H
+
 #include <fstream>
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <string>
+#include <ctime>
 #include <map>
 
 #include "Score.h"
 
-class ScoreSaver{
+class ScoreRecorder{
 private:
     std::string fileName;
     std::vector<Score> scores;
 public:
-    ScoreSaver(std::string fileName = "Scores.txt"){
+    ScoreRecorder(std::string fileName = "Scores.txt"){
         this->fileName = fileName;
+    }
+    void addScore(int boardWidth, int boardHeight, int snakeLength){
+        scores.insert(scores.begin(),Score(time(0),boardWidth, boardHeight, snakeLength));
     }
     void addScore(Score score){
         scores.insert(scores.begin(),score);
@@ -21,7 +28,7 @@ public:
     void createSaveFile(){
         std::ofstream file(fileName);
         if (!file.is_open()){
-            throw new std::exception("Save File Cannot be Created");
+            throw std::ios_base::failure("Save File Cannot be Created");
         }
         file.close();
     }
@@ -52,7 +59,7 @@ public:
     void saveScores(){
         std::ofstream file(fileName);
         if (!file.is_open()){
-            throw new std::exception("Save File Cannot be Created");
+            throw std::ios_base::failure("Save File Cannot be Created");
         }
         for (Score score : scores){
             file << score << "\n";
@@ -60,3 +67,5 @@ public:
         file.close();
     }
 };
+
+#endif

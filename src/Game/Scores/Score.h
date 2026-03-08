@@ -1,3 +1,6 @@
+#ifndef SCORE_H
+#define SCORE_H
+
 #include <utility>
 #include <string>
 #include <iostream>
@@ -5,9 +8,9 @@
 
 class Score{
 private:
+    time_t date;
     int width;
     int height;
-    time_t date;
     int finalLength;
 public:
     Score(){
@@ -42,3 +45,5 @@ std::ostream& operator<<(std::ostream& out, Score score){
     out << ctime(&score.date) << " " << score.width << "x" << score.height << " Length: " << score.finalLength;
     return (out);
 }
+
+#endif
