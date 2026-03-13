@@ -2,19 +2,20 @@
 #define SNAKE_GAME_H
 
 #include "StartMenu.h"
-#include <iostream>
+#include "../ControlLayers/LayerStack.h"
 
 class SnakeGame{
 public:
-    SnakeGame(){
+    LayerStack* stack;
+    SnakeGame() : stack(new LayerStack()){
+        
     }
     ~SnakeGame(){
-        LayerStack::shutdown();
     }
     void run(){
-        StartMenu* menu = new StartMenu();
-        LayerStack::addLayer(menu);
-        std::cout << "DONE\n";
+        StartMenu* menu = new StartMenu(stack);
+        stack->addLayer(menu);
+        stack->run();
     }
 };
 

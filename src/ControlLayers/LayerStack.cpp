@@ -1,27 +1,17 @@
 #include "LayerStack.h"
 #include "Layer.h"   
-#include "KeyBoard.h"
+#include "Keyboard.h"
 #include "PollThread.h"
 
-std::unique_ptr<KeyBoard> LayerStack::keyboard = nullptr;
-std::forward_list<Layer*> LayerStack::LayerOrder;
-std::chrono::milliseconds LayerStack::pollPeriod;
-std::atomic<bool> LayerStack::running = false;
-bool LayerStack::isInit = false;
 
-// ---------------- Public ----------------
-void LayerStack::init(bool haveKeyboardInputs, int RefreshPerSecond, int keyboardRefreshPerSecond) {
-    if (isInit)
-        return;
-
-    isInit = true;
+LayerStack::LayerStack(bool haveKeyboardInputs, int RefreshPerSecond, int keyboardRefreshPerSecond) 
+: pollPeriod(1000/RefreshPerSecond){
     if (haveKeyboardInputs) {
-        keyboard = std::make_unique<KeyBoard>(keyPressed, keyReleased, keyboardRefreshPerSecond);
+        keyboard = std::make_unique<Keyboard>(this, keyboardRefreshPerSecond);
     }
 }
 
-void LayerStack::shutdown() {
-    isInit = false;
+LayerStack::~LayerStack() {
     for (Layer* layer : LayerOrder)
         delete layer;
     LayerOrder.clear();
@@ -30,10 +20,6 @@ void LayerStack::shutdown() {
 
 void LayerStack::addLayer(Layer* layer) {
     LayerOrder.push_front(layer);
-    if (!LayerStack::isInit){
-        LayerStack::init();
-        LayerStack::runStack();
-    }
 }
 
 void LayerStack::deleteLayer(Layer* layer) {
@@ -61,19 +47,19 @@ void LayerStack::replaceLayer(Layer* layer) {
     }
 }
 
-void LayerStack::keyPressed(char key) {
+void LayerStack::keyPress(char key) {
     if (!LayerOrder.empty())
         LayerOrder.front()->keyPressed(key);
 }
 
-void LayerStack::keyReleased(char key) {
+void LayerStack::keyRelease(char key) {
     if (!LayerOrder.empty())
         LayerOrder.front()->keyReleased(key);
 }
 
-void LayerStack::runStack() {
+void LayerStack::run() {
     running = true;
-    while (true){
+    while (running){
         auto it = LayerOrder.begin();
         while (it != LayerOrder.end()) {
             (*it)->run();
@@ -88,4 +74,7 @@ void LayerStack::runStack() {
 }
 bool LayerStack::isRunning(){
     return(running);
+}
+void LayerStack::stopRunning(){
+    running = false;
 }

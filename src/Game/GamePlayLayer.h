@@ -29,8 +29,8 @@ private:
     bool gameOver;
 
 public:
-    GamePlayLayer(int width = 20, int height = 20, bool gameOver = false)
-    : Layer(),
+    GamePlayLayer(LayerStack* currStack, int width = 20, int height = 20, bool gameOver = false)
+    : Layer(currStack),
     gameOver{gameOver}, boardWidth{width}, boardHeight{height}{
 
     }
@@ -66,10 +66,14 @@ public:
         exitLayer();
     }
     void keyPressed(char key){
-        if (bodyParts.size() == 1 && direction.isValidDirection(key))
+        key = toupper(key);
+        if (bodyParts.size() == 1 && direction.isValidDirection(key)){
             direction.changeDirection(key);
-        else if (direction.isValidDirection(key) && direction.isValidDirectionChange(key))
+        }
+        else if (direction.isValidDirection(key) && direction.isValidDirectionChange(key)){
             direction.changeDirection(key);
+            std::cout << "Changed\n";
+        }
     }
     void printBoard() {
         for (int i = 0; i < board.size()+2; i++) {

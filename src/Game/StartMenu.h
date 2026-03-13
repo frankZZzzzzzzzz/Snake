@@ -9,7 +9,7 @@
 
 class StartMenu : public Layer{
 public:
-    StartMenu(){
+    StartMenu(LayerStack* currStack) : Layer(currStack){
     }
     void run(){
         system("cls");
@@ -17,11 +17,9 @@ public:
     }
     void keyPressed(char key){
         switch(key){
-            case '1': LayerStack::addLayer(new GamePlayLayer()); break;
-            case '2': LayerStack::addLayer(new GamePlayLayer()); break;
-            case '3': 
-                LayerStack::shutdown();
-                exit(0);
+            case '1': stack->addLayer(new GamePlayLayer(stack)); break;
+            case '2': stack->addLayer(new GamePlayLayer(stack)); break;
+            case '3': stack->stopRunning(); break;
             default: return;
         }
     }

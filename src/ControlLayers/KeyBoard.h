@@ -9,23 +9,21 @@
 #include <conio.h>
 
 #include "PollThread.h"
+#include "KeyboardFunctionality.h"
 
-class KeyBoard{
+class Keyboard{
 private:
+    KeyboardFunctionality* instance;
     std::unordered_set<char> keysPressed;
-    std::function<void(char)> keyPress;
-    std::function<void(char)> keyRelease;
     PollThread keyboardThread;
 
     void threadTask();
     void updatePressedKeys(char key);
     void checkReleasedKeys();
 public:
-    KeyBoard(std::function<void(char)> KeyPress, 
-    std::function<void(char)> KeyRelease = std::function<void(char)>(), 
-    int pollRatePerSecond = 10);
+    Keyboard(KeyboardFunctionality* instance, int pollRatePerSecond = 10);
     
-    ~KeyBoard();
+    ~Keyboard();
     void end();
 };
 

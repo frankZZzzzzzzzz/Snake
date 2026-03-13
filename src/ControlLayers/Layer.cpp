@@ -1,10 +1,12 @@
 #include "Layer.h"
 
-Layer::Layer (bool isTransparent): isTransparent{isTransparent}{
+Layer::Layer (LayerStack* CurrStack)
+: stack{CurrStack}{
+    running = true;
 }
 void Layer::replaceThisLayer(Layer *otherLayer){
-    LayerStack::replaceLayer(otherLayer);
+    stack->replaceLayer(otherLayer);
 }
 void Layer::exitLayer(){
-    LayerStack::deleteLayer(this);
+    running = false;
 }

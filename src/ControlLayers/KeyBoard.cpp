@@ -1,21 +1,18 @@
-#include "KeyBoard.h"
+#include "Keyboard.h"
 
-KeyBoard::KeyBoard(std::function<void(char)> KeyPress, 
-    std::function<void(char)> KeyRelease, 
-    int pollRatePerSecond) :
-    keyPress{KeyPress},
-    keyRelease{KeyRelease},
+Keyboard::Keyboard(KeyboardFunctionality* Instance, int pollRatePerSecond) :
+    instance{Instance},
     keyboardThread(pollRatePerSecond, threadTask,this/*[this](){this->threadTask();}*/){
 }
 
-KeyBoard::~KeyBoard(){
+Keyboard::~Keyboard(){
     keyboardThread.join();
 }
-void KeyBoard::end(){
+void Keyboard::end(){
     keyboardThread.join();
 }
 
-void KeyBoard::threadTask(){
+void Keyboard::threadTask(){
     char key = '\0';
     while (_kbhit()){
         key = _getch();
@@ -24,20 +21,18 @@ void KeyBoard::threadTask(){
 
     checkReleasedKeys();
 }
-void KeyBoard::updatePressedKeys(char key){
+void Keyboard::updatePressedKeys(char key){
     if (keysPressed.find(key) != keysPressed.end())
         return;
 
-    if (keyPress)
-        keyPress(key);
+    instance->keyPress(key);
     keysPressed.insert(key);
 }
-void KeyBoard::checkReleasedKeys(){
+void Keyboard::checkReleasedKeys(){
     std::unordered_set<char>::iterator it = keysPressed.begin();
     while (it != keysPressed.end()){
         if (GetAsyncKeyState(*it) == false){
-            if (keyRelease != nullptr)
-                keyRelease(*it);
+            instance->keyRelease(*it);
             it = keysPressed.erase(it);
         }
         else
