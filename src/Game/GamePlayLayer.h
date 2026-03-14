@@ -18,7 +18,6 @@
 #include "../ControlLayers/Layer.h"
 
 class GamePlayLayer : public Layer{
-
 private:
     std::vector<std::vector<char>> board;
     std::vector<std::pair<int,int>> bodyParts;
@@ -72,7 +71,6 @@ public:
         }
         else if (direction.isValidDirection(key) && direction.isValidDirectionChange(key)){
             direction.changeDirection(key);
-            std::cout << "Changed\n";
         }
     }
     void printBoard() {
