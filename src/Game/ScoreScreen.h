@@ -23,7 +23,6 @@ public:
         }
     }
     void keyPressed(char key){
-        std::cout << "PRESSSED " << key << std::endl;
         if (key == '1')
             exitLayer();
     }
