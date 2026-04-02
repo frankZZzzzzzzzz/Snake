@@ -60,13 +60,14 @@ void LayerStack::keyRelease(char key) {
 void LayerStack::run() {
     running = true;
     while (running){
-        auto it = LayerOrder.begin();
-        while (it != LayerOrder.end()) {
-            (*it)->run();
-            ++it;
+        if (!LayerOrder.empty()){
+            if (!LayerOrder.front()->isRunning())
+                LayerOrder.pop_front();
+            else
+                LayerOrder.front()->run();
         }
-        if (it != LayerOrder.end())
-            (*it)->run();
+        else
+            running = false;
 
         auto later = std::chrono::steady_clock::now() + std::chrono::seconds(2);
         std::this_thread::sleep_until(later);

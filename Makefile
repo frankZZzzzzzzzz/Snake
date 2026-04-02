@@ -1,27 +1,36 @@
-# Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++23 #-Wall -Wextra
+CXXFLAGS = -std=c++23 -MMD -MP
 
-# Find all .cpp files recursively in src/
-SRCS = $(shell find src -name "*.cpp" ! -name "tempCodeRunnerFile.cpp")
+SRC_DIR = src
+BUILD_DIR = build
 
-# Convert source filenames to object filenames
-OBJS = $(SRCS:.cpp=.o)
+FILES := $(shell find $(SRC_DIR) -name "*.cpp")
+OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(FILES))
 
-# Output executable
-TARGET = SnakeGame.exe
+SnakeGame.exe: $(OBJS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
-# Default target
-all: $(TARGET)
-
-# Link objects into the executable
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
-
-# Compile .cpp into .o
-%.o: %.cpp
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean build files
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf ./$(BUILD_DIR) SnakeGame.exe
+
+#SnakeGame.exe: BuildFolder/Main.o Keyboard.o Layer.o LayerStack.o PollThread.o
+#	${CXX} ${CXXFlags} Main.o Keyboard.o Layer.o LayerStack.o PollThread.o -o SnakeGame.exe
+
+#Main.o: src/Main.cpp
+#	${CXX} ${CXXFlags} -c $^ ${BuildFolder}$@
+
+#Keyboard.o: src/ControlLayers/Keyboard.cpp src/ControlLayers/Keyboard.h
+#	${CXX} ${CXXFlags} -c src/ControlLayers/Keyboard.cpp ${BuildFolder}$@
+
+#Layer.o: src/ControlLayers/Layer.cpp src/ControlLayers/Layer.h
+#	${CXX} ${CXXFlags} -c src/ControlLayers/Layer.cpp ${BuildFolder}$@
+
+#LayerStack.o: src/ControlLayers/LayerStack.cpp src/ControlLayers/LayerStack.h
+#	${CXX} ${CXXFlags} -c src/ControlLayers/LayerStack.cpp ${BuildFolder}$@
+
+#PollThread.o: src/ControlLayers/PollThread.cpp src/ControlLayers/PollThread.h
+#	${CXX} ${CXXFlags} -c src/ControlLayers/PollThread.cpp ${BuildFolder}$@

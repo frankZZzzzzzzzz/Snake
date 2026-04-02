@@ -6,6 +6,7 @@
 #include "../ControlLayers/Layer.h"
 #include "../ControlLayers/LayerStack.h"
 #include "GamePlayLayer.h"
+#include "ScoreScreen.h"
 
 class StartMenu : public Layer{
 public:
@@ -13,13 +14,13 @@ public:
     }
     void run(){
         system("cls");
-        std::cout << "(1) Start\t(2) Settings\t(3) Previous Scores\n";
+        std::cout << "(1) Start\t(2) Previous Scores\t(3) Exit\n";
     }
     void keyPressed(char key){
         switch(key){
             case '1': stack->addLayer(new GamePlayLayer(stack)); break;
-            case '2': stack->addLayer(new GamePlayLayer(stack)); break;
-            case '3': stack->stopRunning(); break;
+            case '2': stack->addLayer(new ScoreScreen(stack)); break;
+            case '3': exitLayer(); break;
             default: return;
         }
     }

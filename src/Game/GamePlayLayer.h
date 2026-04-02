@@ -62,6 +62,9 @@ public:
         else
             std::cout << "GAME OVER, YOU LOSE!";
         
+        recorder.readScores();
+        recorder.addScore(boardWidth,boardHeight,bodyParts.size());
+        recorder.saveScores();
         exitLayer();
     }
     void keyPressed(char key){

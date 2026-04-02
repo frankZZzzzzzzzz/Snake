@@ -3,5 +3,4 @@
 int main(){
     SnakeGame game;
     game.run();
-    std::cin.get();
 }
