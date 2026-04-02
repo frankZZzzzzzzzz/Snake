@@ -27,3 +27,7 @@ void Score::setDate(time_t Date){
 void Score::setLength(int Length){
     finalLength = Length;
 }
+std::ostream& operator<<(std::ostream& out, Score score){
+    out << ctime(&score.date) << " " << score.width << "x" << score.height << " Length: " << score.finalLength;
+    return (out);
+}

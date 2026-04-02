@@ -24,9 +24,6 @@ public:
     void setLength(int Length);
     friend std::ostream& operator<<(std::ostream& out, Score score);
 };
-std::ostream& operator<<(std::ostream& out, Score score){
-    out << ctime(&score.date) << " " << score.width << "x" << score.height << " Length: " << score.finalLength;
-    return (out);
-}
+std::ostream& operator<<(std::ostream& out, Score score);
 
 #endif
