@@ -1,4 +1,4 @@
-Very simple snake game
+# Terminal Snake Game
 
 ## Features:
  - Can go through wall and appear on the other side
